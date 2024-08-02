@@ -3,33 +3,76 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from './CartSlice';
 import './CartItem.css';
 
+let totalQuantity = 0;
+
+// Function to update total quantity
+const updateTotalQuantity = (quantity) => {
+  totalQuantity += quantity;
+  // Update cart icon in the navbar with the total quantity
+  document.getElementById('cart-icon').innerText = totalQuantity;
+};
+
+// Event handler for adding an item to the cart
+const addItemToCart = (item) => {
+  // Add the item to the cart
+  // Update total quantity by item quantity
+  updateTotalQuantity(item.quantity);
+};
+
+// Event handler for removing an item from the cart
+const removeItemFromCart = (item) => {
+  // Remove the item from the cart
+  // Update total quantity by negative item quantity
+  updateTotalQuantity(-item.quantity);
+};
+
 const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
   // Calculate total amount for all products in the cart
   const calculateTotalAmount = () => {
+    let totalAmount = 0;
+    cart.forEach(item => {
+      totalAmount += item.quantity * item.cost;
+    });
+    return totalAmount;
+  };
  
   };
 
+  const handleCheckoutShopping = (e) => {
+    alert('Functionality to be added for future reference');
+  };
+
   const handleContinueShopping = (e) => {
+    onContinueShopping();
    
   };
 
 
 
   const handleIncrement = (item) => {
+    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
   };
 
   const handleDecrement = (item) => {
-   
+    if (item.quantity > 1) {
+      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    } else {
+      dispatch(removeItem({ name: item.name }));
+    }
   };
 
+
+
   const handleRemove = (item) => {
+    dispatch(removeItem({ name: item.name }));
   };
 
   // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
+    return item.quantity * item.cost;
   };
 
   return (
